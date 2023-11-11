@@ -1,0 +1,55 @@
+## Haar Cascades
+# haar_cascade_frontfaces = cv2.CascadeClassifier('haarcascade/haarcascade_frontalface_alt_tree.xml')
+# haar_cascade_profilefaces = cv2.CascadeClassifier('haarcascade/haarcascade_profileface.xml')
+# haar_cascade_fullbodies = cv2.CascadeClassifier('haarcascade/haarcascade_fullbody.xml')
+# haar_cascade_upperbodies = cv2.CascadeClassifier('haarcascade/haarcascade_upperbody.xml')
+# haar_cascade_lowerbodies = cv2.CascadeClassifier('haarcascade/haarcascade_lowerbody.xml')
+# frontfaces = haar_cascade_frontfaces.detectMultiScale(gaussian_blur, 1.1, 2)
+# profilefaces = haar_cascade_profilefaces.detectMultiScale(gaussian_blur, 1.1, 4)
+# fullbodies = haar_cascade_fullbodies.detectMultiScale(gaussian_blur, 1.1, 4)
+# upperbodies = haar_cascade_upperbodies.detectMultiScale(gaussian_blur, 1.1, 4)
+# lowerbodies = haar_cascade_lowerbodies.detectMultiScale(gaussian_blur, 1.1, 4)
+
+## Draw rectangles for HAAR
+# This part was removed to get rid of false positives
+# for (x, y, w, h) in frontfaces:
+#     cv2.rectangle(image, (x, y), (x + w, y + h), red, 2)
+# for (x, y, w, h) in profilefaces:
+#     cv2.rectangle(image, (x, y), (x + w, y + h), red, 2)
+# for (x, y, w, h) in fullbodies:
+#     cv2.rectangle(image, (x, y), (x + w, y + h), blue, 2)
+# for (x, y, w, h) in upperbodies:
+#     cv2.rectangle(image, (x, y), (x + w, y + h), orange, 2)
+# for (x, y, w, h) in lowerbodies:
+#     cv2.rectangle(image, (x, y), (x + w, y + h), purple, 2)
+
+## Draw bounding boxes for YOLO detections -- used to draw rectangles around all objects
+# for i in indices.flatten():
+#     box = boxes[i]
+#     x, y, w, h = box[0], box[1], box[2], box[3]
+#     label = str(classes[class_ids[i]])
+#     color = (0, 255, 0)
+#     cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+#     cv2.putText(image, label, (x, y + 30), cv2.FONT_HERSHEY_PLAIN, 3, color, 3)
+
+# Counting -- moved to its own variable
+# Number of boxes
+# frontface_count = len(frontfaces)
+# profileface_count = len(profilefaces)
+# fullbody_count = len(fullbodies)
+# upperbody_count = len(upperbodies)
+# lowerbody_count = len(lowerbodies)
+# yolo_count = len(indices)
+
+# print(f"Front faces detected: {frontface_count}")
+# print(f"Profile faces detected: {profileface_count}")
+# print(f"Fullbodies detected: {fullbody_count}")
+# print(f"Upperbodies detected: {upperbody_count}")
+# print(f"Lowerbodies detected: {lowerbody_count}")
+
+# Median blur
+median_blur = cv2.medianBlur(gray, 5)
+# Bilateral filter
+bilateral_filter = cv2.bilateralFilter(gray, 9, 75, 75)
+saveImage(median_blur, 'median_blur.png')
+saveImage(bilateral_filter, 'bilateral_filter.png')

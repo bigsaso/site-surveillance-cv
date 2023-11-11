@@ -1,0 +1,12 @@
+# Trial files
+trial.py
+# Virtual environment
+venv
+# HAAR Cascades files
+haarcascade
+# YOLO files
+coco.names
+yolov3*
+# Images and results
+*.png
+*.jpg
