@@ -19,7 +19,8 @@ cp venv/lib/cv2/data/* ./haarcascades
 ```
 ### On MacOS
 ```
-cp venv/lib/python3.11/site-packages/cv2/data/* ./haarcascades```
+cp venv/lib/python3.11/site-packages/cv2/data/* ./haarcascades
+```
 
 ## Download YOLO files to root of project for easy access in code
 ```
