@@ -10,7 +10,10 @@
 ```pip install -r requirements.txt```
 
 ## Copy the HAAR Cascade files to root of project for easy access in code
-```cp venv/lib/cv2/data/* ./haarcascades```
+```
+mkdir haarcascades
+cp venv/lib/cv2/data/* ./haarcascades
+```
 
 ## Download YOLO files to root of project for easy access in code
 ```
