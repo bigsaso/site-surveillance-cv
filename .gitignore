@@ -3,12 +3,13 @@ trial*
 # Virtual environment
 venv
 # HAAR Cascades files
-haarcascade
+haarcascades
 # YOLO files
 coco.names
 yolov3*
 # Images and results
 *.png
 *.jpg
+*.jpeg
 # Videos and results
 *.mp4
