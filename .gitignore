@@ -1,5 +1,5 @@
 # Trial files
-trial.py
+trial*
 # Virtual environment
 venv
 # HAAR Cascades files
@@ -10,3 +10,5 @@ yolov3*
 # Images and results
 *.png
 *.jpg
+# Videos and results
+*.mp4
