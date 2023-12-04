@@ -81,7 +81,7 @@ def process_image(input, output):
             num_people = num_people + 1
             x, y, w, h = box[0], box[1], box[2], box[3]
             cv2.rectangle(image, (x, y), (x + w, y + h), green, 2)
-            cv2.putText(image, f'Person {num_people}', (x, y + 30), cv2.FONT_HERSHEY_PLAIN, 3, red, 3)
+            #cv2.putText(image, f'Person {num_people}', (x, y + 30), cv2.FONT_HERSHEY_PLAIN, 2, red, 2)
 
     # Display Count
     # PutText
