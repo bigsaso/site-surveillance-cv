@@ -408,7 +408,7 @@ def main():
     elif args.live and not args.image and not args.video:
         process_live(0, args.output_file)
     else:
-        print("Please specify either -i for image or -v for video processing.")
+        print("Please specify either -i for image, -v for video processing, or -l for live feed.")
 
 if __name__ == "__main__":
     main()
