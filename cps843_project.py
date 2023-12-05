@@ -117,7 +117,7 @@ def process_video(input, output):
     
     # Define the codec and create a VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can also try other codecs like 'XVID'
-    out_video = cv2.VideoWriter(output, fourcc, 60, (width, height))
+    out_video = cv2.VideoWriter(output, fourcc, 30, (width, height))
 
     # Variables for controlling video playback
     paused = False
@@ -214,7 +214,7 @@ def process_video(input, output):
             # Write the frame to the output video file
             out_video.write(frame)
 
-            key = cv2.waitKey(60)  # Decreased wait time
+            key = cv2.waitKey(30)  # Decreased wait time
 
             # Press P to pause/resume the video
             if key == ord('p'):
