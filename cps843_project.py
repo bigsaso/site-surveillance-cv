@@ -99,14 +99,14 @@ def process_image(input, output):
     # Release only for video
     cv2.destroyAllWindows()
 
-def process_video(input, output):
+def process_video(input, output, playback_speed=1.0):
     # Colors
     red = (255, 0, 0)
     green = (0, 255, 0)
     blue = (0, 0, 255)
 
     # Load video
-    cap = cv2.VideoCapture(input, cv2.CAP_MSMF)
+    cap = cv2.VideoCapture(input)#, cv2.CAP_MSMF
     width = int(cap.get(3))
     height = int(cap.get(4))
 
@@ -117,7 +117,7 @@ def process_video(input, output):
     
     # Define the codec and create a VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can also try other codecs like 'XVID'
-    out = cv2.VideoWriter(output, fourcc, 20.0, (width, height))
+    out_video = cv2.VideoWriter(output, fourcc, 1, (width, height))
 
     # Variables for controlling video playback
     paused = False
@@ -192,10 +192,11 @@ def process_video(input, output):
             cv2.imshow('Frame', frame)
 
             # Write the frame to the output video file
-            out.write(frame)
+            out_video.write(frame)
+
+            key = cv2.waitKey(1)  # Decreased wait time
 
             # Press P to pause/resume the video
-            key = cv2.waitKey(60)  # Decreased wait time
             if key == ord('p'):
                 paused = not paused
 
@@ -214,7 +215,7 @@ def process_video(input, output):
             break
         
     # Release the VideoWriter object
-    out.release()
+    out_video.release()
 
     # Release the video capture object and close all windows
     cap.release()
