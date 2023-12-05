@@ -138,7 +138,7 @@ def process_video(input, output):
             # Initialize num_people for each frame
             num_people = 0
 
-            if current_frame % 3 == 0:
+            if current_frame % 3 == 0 or current_frame == 0:
                 # Reset last boxes and number of people
                 last_boxes = []
                 last_num_people = 0
