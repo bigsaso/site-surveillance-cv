@@ -243,6 +243,149 @@ def process_video(input, output):
 
     print(f"Total People Detected in the video: {num_people}")
 
+def process_live(input, output):
+    # Colors
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+
+    # Create a VideoCapture object
+    cap = cv2.VideoCapture(input)
+    width = int(cap.get(3))
+    height = int(cap.get(4))
+    
+    # Check if camera opened successfully
+    if not cap.isOpened(): 
+        print("Unable to read camera feed")
+        return
+    
+    # Define the codec and create a VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # You can also try other codecs like 'XVID'
+    out_video = cv2.VideoWriter(output, fourcc, 30, (width, height))
+
+    # Variables for controlling video playback
+    paused = False
+    current_frame = 0
+
+    # Store last boxes and num_people
+    last_boxes = []
+    last_num_people = 0
+    
+    while cap.isOpened():
+        ret, frame = cap.read()
+
+        if not paused:
+            current_frame += 1
+        
+        if ret:
+            # Initialize num_people for each frame
+            num_people = 0
+
+            if current_frame % 3 == 0 or current_frame == 0:
+                # Reset last boxes and number of people
+                last_boxes = []
+                last_num_people = 0
+
+                # Preprocessing
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                gaussian_blur = cv2.GaussianBlur(gray, (9, 9), 0)
+
+                # Object Detection (YOLO)
+                yolo = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')
+                layer_names = yolo.getLayerNames()
+                output_layers = [layer_names[i - 1] for i in yolo.getUnconnectedOutLayers().flatten()]
+                blob = cv2.dnn.blobFromImage(frame, 0.00392, (416, 416), (0, 0, 0), True, crop=False) # can be changed to (608, 608), this increases input size of object.
+                yolo.setInput(blob)
+                outs = yolo.forward(output_layers)
+
+                # Bounding Boxes
+                class_ids = []
+                confidences = []
+                boxes = []
+                for out in outs:
+                    for detection in out:
+                        scores = detection[5:]
+                        class_id = np.argmax(scores)
+                        confidence = scores[class_id]
+                        if confidence > 0.3 and class_id == 0:  # Check if the detected class is a person
+                            num_people += 1
+                            center_x = int(detection[0] * width)
+                            center_y = int(detection[1] * height)
+                            w = int(detection[2] * width)
+                            h = int(detection[3] * height)
+
+                            # Rectangle coordinates
+                            x = int(center_x - w / 2)
+                            y = int(center_y - h / 2)
+
+                            boxes.append([x, y, w, h])
+                            confidences.append(float(confidence))
+                            class_ids.append(class_id)
+
+                # Apply Non-max suppression
+                if boxes and confidences:
+                    indices = cv2.dnn.NMSBoxes(boxes, confidences, 0.3, 0.4)
+
+                    # Check if indices is a tuple, and convert it to a NumPy array
+                    indices = np.array(indices) if isinstance(indices, tuple) else indices
+                
+                    # Draw bounding boxes for YOLO detections
+                    num_people = len(indices)
+                    for i in indices.flatten():
+                        # last_boxes.append(boxes[i])
+                        box = boxes[i]
+                        x, y, w, h = box[0], box[1], box[2], box[3]
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), green, 2)
+                        
+                # # # Display Count
+                # cv2.putText(frame, 'Status : Detecting ', (40, 40), cv2.FONT_HERSHEY_DUPLEX, 0.8, red, 2)
+                # cv2.putText(frame, f'Total People Detected : {num_people}', (40, 70), cv2.FONT_HERSHEY_DUPLEX, 0.8, red, 2)
+
+                # last_boxes = boxes
+                last_num_people = num_people
+
+            # for box in last_boxes:
+            #     x, y, w, h = box[0], box[1], box[2], box[3]
+            #     cv2.rectangle(frame, (x, y), (x + w, y + h), green, 2)
+            # Display Count
+            cv2.putText(frame, 'Status : Not Detecting ', (40, 40), cv2.FONT_HERSHEY_DUPLEX, 0.8, red, 2)
+            cv2.putText(frame, f'Total People Detected : {last_num_people}', (40, 70), cv2.FONT_HERSHEY_DUPLEX, 0.8, red, 2)
+
+            # Show the frame
+            cv2.imshow('Frame', frame)
+
+            # Write the frame to the output video file
+            out_video.write(frame)
+
+            key = cv2.waitKey(30)  # Decreased wait time
+
+            # Press P to pause/resume the video
+            if key == ord('p'):
+                paused = not paused
+
+            # Press Q on the keyboard to exit
+            elif key == ord('q'):
+                break
+
+            # Press S to skip frames (10 frames per press)
+            elif key == ord('s'):
+                current_frame += 10
+
+            # Set the video capture to the specified frame
+            cap.set(cv2.CAP_PROP_POS_FRAMES, current_frame)
+
+        else:
+            break
+        
+    # Release the VideoWriter object
+    out_video.release()
+
+    # Release the video capture object and close all windows
+    cap.release()
+    cv2.destroyAllWindows()
+
+    print(f"Total People Detected in the video: {num_people}")
+
 def main():
     # Create an ArgumentParser object
     parser = argparse.ArgumentParser(description="A script that processes image or video files.")
@@ -250,6 +393,7 @@ def main():
     # Add arguments
     parser.add_argument("-i", "--image", help="Specify if input is an image", action="store_true")
     parser.add_argument("-v", "--video", help="Specify if input is a video", action="store_true")
+    parser.add_argument("-l", "--live", help="Specify if input is a live feed", action="store_true")
     parser.add_argument("input_file", help="Input file path")
     parser.add_argument("-o", "--output", help="Output file path", action="store_true")
     parser.add_argument("output_file", help="Output file path")
@@ -257,10 +401,12 @@ def main():
     # Parse the command line arguments
     args = parser.parse_args()
 
-    if args.image and not args.video:
+    if args.image and not args.video and not args.live:
         process_image(args.input_file, args.output_file)
-    elif args.video and not args.image:
+    elif args.video and not args.image and not args.live:
         process_video(args.input_file, args.output_file)
+    elif args.live and not args.image and not args.video:
+        process_live(0, args.output_file)
     else:
         print("Please specify either -i for image or -v for video processing.")
 
