@@ -2,6 +2,7 @@
 trial*
 # Virtual environment
 venv
+.venv
 # HAAR Cascades files
 haarcascades
 # YOLO files
