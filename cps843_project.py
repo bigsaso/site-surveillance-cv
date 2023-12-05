@@ -43,7 +43,7 @@ def process_image(input, output):
     layer_names = yolo.getLayerNames()
     output_layers = [layer_names[i - 1] for i in yolo.getUnconnectedOutLayers().flatten()]
     classes = open('coco.names').read().strip().split('\n')
-    blob = cv2.dnn.blobFromImage(image, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
+    blob = cv2.dnn.blobFromImage(image, 0.00392, (416, 416), (0, 0, 0), True, crop=False) # Keeping as (416,416) as every site should have many security cameras, and each camera should not pick up dudes from too far away as those dudes are in another camera's FOV.
     yolo.setInput(blob)
     outs = yolo.forward(output_layers)
 
